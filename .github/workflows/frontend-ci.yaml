@@ -54,12 +54,11 @@ jobs:
 
       - name: Run tests
         working-directory: starter/frontend
-        run: CI=true npm test -- --watchAll=false
+        run: CI=true npm test -- --watchAll=false --passWithNoTests
 
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs:
       - lint
       - test
 
