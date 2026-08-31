@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "starter/backend/**"
+
   workflow_dispatch:
 
 env:
@@ -120,6 +121,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "v1.34.0"
+
+      - name: Install Kustomize
+        run: |
+          curl -sSLo /tmp/kustomize.tar.gz \
+            https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz
+
+          tar -xzf /tmp/kustomize.tar.gz -C /tmp
+
+          sudo mv /tmp/kustomize /usr/local/bin/kustomize
+
+          kustomize version
+
       - name: Configure kubectl
         run: |
           aws eks update-kubeconfig \
@@ -136,7 +153,7 @@ jobs:
             --output table
 
           echo "=== NODES ==="
-          kubectl get nodes -o wide || true
+          kubectl get nodes -o wide
 
       - name: Update backend image
         working-directory: starter/backend/k8s
