@@ -10,7 +10,6 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: backend
   EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
@@ -91,14 +90,14 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and tag image
+      - name: Build Docker image
         working-directory: starter/backend
         run: |
           docker build \
             -t "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" \
             .
 
-      - name: Push image to ECR
+      - name: Push Docker image
         run: |
           docker push \
             "${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
@@ -127,6 +126,18 @@ jobs:
             --region "${AWS_REGION}" \
             --name "${EKS_CLUSTER_NAME}"
 
+      - name: Verify cluster connectivity
+        run: |
+          echo "=== EKS CLUSTER ==="
+          aws eks describe-cluster \
+            --name "${EKS_CLUSTER_NAME}" \
+            --region "${AWS_REGION}" \
+            --query 'cluster.{Status:status,Version:version}' \
+            --output table
+
+          echo "=== NODES ==="
+          kubectl get nodes -o wide || true
+
       - name: Update backend image
         working-directory: starter/backend/k8s
         run: |
@@ -138,8 +149,24 @@ jobs:
         run: |
           kustomize build . | kubectl apply -f -
 
+      - name: Diagnose backend deployment
+        run: |
+          echo "=== NODES ==="
+          kubectl get nodes -o wide || true
+
+          echo "=== BACKEND DEPLOYMENT ==="
+          kubectl get deployment backend -o wide || true
+
+          echo "=== BACKEND PODS ==="
+          kubectl get pods -l app=backend -o wide || true
+
+          echo "=== BACKEND SERVICE ==="
+          kubectl get svc backend -o wide || true
+
+          echo "=== RECENT EVENTS ==="
+          kubectl get events \
+            --sort-by=.lastTimestamp | tail -50 || true
+
       - name: Verify backend rollout
         run: |
           kubectl rollout status deployment/backend --timeout=180s
-          kubectl get pods -l app=backend
-          kubectl get svc backend
