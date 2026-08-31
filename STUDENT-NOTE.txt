@@ -1,0 +1,57 @@
+Student Note – Movie Picture Pipeline
+
+Project: Movie Picture Pipeline
+
+GitHub Repository:
+https://github.com/KavinES17/Movie-Picture-Pipeline
+
+AWS Region: us-east-1
+
+Requirements
+
+1. Public GitHub Repository
+https://github.com/KavinES17/Movie-Picture-Pipeline
+
+2. Four GitHub Actions Workflows
+
+- Backend CI
+- Backend Continuous Deployment
+- Frontend CI
+- Frontend Continuous Deployment
+
+GitHub Actions:
+https://github.com/KavinES17/Movie-Picture-Pipeline/actions
+
+Screenshots of the successful workflow runs are included with the submission.
+
+3. Frontend LoadBalancer URL
+
+http://ae4b0bc9dd7b445e48358341a1dcff4b-731924703.us-east-1.elb.amazonaws.com
+
+4. Backend LoadBalancer URL
+
+http://a2df7e31538d3444cb641498c5202bfb-1302798608.us-east-1.elb.amazonaws.com
+
+Backend /movies endpoint:
+
+http://a2df7e31538d3444cb641498c5202bfb-1302798608.us-east-1.elb.amazonaws.com/movies
+
+5. Frontend Movie List
+
+Frontend application:
+
+http://ae4b0bc9dd7b445e48358341a1dcff4b-731924703.us-east-1.elb.amazonaws.com
+
+The Movie List screenshot showing:
+
+- Top Gun: Maverick
+- Sonic the Hedgehog
+- A Quiet Place
+
+is included with the submission.
+
+6. Backend JSON Output
+
+The /movies endpoint displays the movie data in JSON format in the browser.
+
+Project Status: Completed.
